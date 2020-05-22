@@ -119,7 +119,7 @@ def register(id):
             ext = user_filename.split('.')[-1]
             if (ext == "jpeg" or ext =="png" or ext =="jpg"):
                 aname = user_filename.split('.')[0]
-                filename = secure_filename('{}.{}'.format(aname,ext))
+                filename = '{}.{}'.format(aname,ext)
                 pathname = os.path.join(app.config['UPLOADS'],filename)
                 pic.save(pathname)
                 #print(pic)
@@ -301,7 +301,7 @@ def update(id):
         user_filename = pic.filename
         ext = user_filename.split('.')[-1]
         aname = user_filename.split('.')[0]
-        filename = secure_filename('{}.{}'.format(aname,ext))
+        filename = '{}.{}'.format(aname,ext)
         if (filename==""):
             insertSuccessful = lookup.updateMember(conn, id, name, orgMail, password, bio, link, cell)
             if (insertSuccessful):
@@ -338,7 +338,7 @@ def addStaff(id):
         user_filename = pic.filename
         ext = user_filename.split('.')[-1]
         aname = user_filename.split('.')[0]
-        filename = secure_filename('{}.{}'.format(aname,ext))
+        filename = '{}.{}'.format(aname,ext)
         pathname = os.path.join(app.config['UPLOADS'],filename)
         pic.save(pathname)
         conn = lookup.getConn('sjin')
