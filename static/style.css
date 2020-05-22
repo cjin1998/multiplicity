@@ -1,0 +1,314 @@
+/* For flashed messages; make them stand out using red and italics */
+#main {
+  text-align: center;
+  margin: 20px 2em;
+  background-color: #f5f5f3;
+}
+
+.upperleft {
+  position: absolute;
+  top: -20px;
+  left: -25px;
+}
+
+.upperleftgreen {
+  position: absolute;
+  top: -60px;
+  left: -55px;
+}
+
+.heading {
+  font-size: 300%;
+  color: #0a2953;
+  font-style: bold;
+}
+
+#flash {
+  text-align: center;
+}
+
+body {
+  position: relative;
+  text-align: center;
+  margin: 20px 2em;
+  background-color: #cceba3;
+}
+
+.btext {
+  color: #f5f5f3;
+  font-family: "Barlow", sans-serif;
+}
+
+p2 {
+  color: #0a2953;
+  font-size: 100%;
+  font-style: italic;
+  font-family: "Playfair Display", serif;
+}
+
+p3 {
+  color: #0a2953;
+
+  font-size: 100%;
+  font-style: italic;
+  font-family: "Barlow", sans-serif;
+}
+
+#messages {
+  color: red;
+  font-style: italic;
+}
+
+p10 {
+  font-style: italic;
+  font-size: 120%;
+}
+
+.thing {
+  color: #0a2953;
+  font-style: italic;
+  font-size: 150%;
+  font-family: "Playfair Display", serif;
+}
+
+.timess {
+  color: #0a2953;
+  font-style: italic;
+  font-size: 100%;
+}
+h5 {
+  font-family: "Barlow", sans-serif;
+  color: #0a2953;
+}
+h1,
+h2 {
+  text-align: center;
+  font-family: "Advent Pro", sans-serif;
+  font-style: bold;
+  color: #0a2953;
+}
+
+p {
+  text-align: left;
+}
+
+h1 {
+  font-size: 200%;
+}
+
+h2 {
+  font-size: 150%;
+}
+
+h6 {
+  font-size: 100%;
+  color: #0a2953;
+}
+
+.title {
+  font-size: 200%;
+  color: #0a2953;
+  font-family: "Playfair Display", serif;
+}
+
+.entry {
+  font-family: "Barlow", sans-serif;
+  font-size: 100%;
+  color: #0a2953;
+}
+
+.orgName {
+  font-size: 200%;
+  color: #0a2953;
+  font-family: "Advent Pro", sans-serif;
+  font-style: bold;
+}
+
+.card-title {
+  font-size: 150%;
+  color: #0a2953;
+}
+
+h7 {
+  font-size: 170%;
+  color: #0a2953;
+  font-family: "Barlow", sans-serif;
+}
+
+h8 {
+  font-size: 170%;
+  color: #0a2953;
+}
+
+#form {
+  text-align: left;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  border-radius: 25px;
+  background-color: #f5f5f3;
+  border-color: #0a2953;
+
+  border-width: 7px;
+  padding: 20px;
+}
+
+#container {
+  align-items: flex-start;
+  display: flex;
+  width: 50px;
+}
+
+#staff-card {
+  display: grid;
+  margin-right: 25px;
+  margin-left: 25px;
+  margin-bottom: 30px;
+}
+
+#rec {
+  text-align: center;
+  background-color: #0a2953;
+  text-align: left;
+  display: block;
+  width: fit-content;
+  height: fit-content;
+  margin-left: 600px;
+  margin-right: auto;
+  margin-bottom: 70px;
+  padding: auto;
+  border-radius: 25px;
+}
+
+.gradient-border {
+  --borderWidth: 10px;
+  background: #cceba3;
+  position: relative;
+  border-radius: var(--borderWidth);
+}
+
+.gradient-border:after {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--borderWidth));
+  left: calc(-1 * var(--borderWidth));
+  height: calc(100% + var(--borderWidth) * 2);
+  width: calc(100% + var(--borderWidth) * 2);
+  background: linear-gradient(60deg, #cceba3, #dc7f54, #0a2953);
+  border-radius: calc(2 * var(--borderWidth));
+  z-index: -1;
+  animation: animatedgradient 3s ease alternate infinite;
+  background-size: 300% 300%;
+}
+
+@keyframes animatedgradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+form {
+  display: inline-block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+}
+
+li a:hover {
+  color: #f9ef64;
+}
+
+#navigation {
+  text-align: center;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[type="submit"] {
+  background-color: #f9ef64;
+  font-family: "Barlow", sans-serif;
+
+  border-radius: 23px;
+  padding: 5px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+[type="submit"]:hover {
+  background-color: #0a2953;
+  font-family: "Barlow", sans-serif;
+  border-radius: 23px;
+  padding: 5px 15px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  display: inline-block;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#register-form {
+  text-align: center;
+}
+
+.prompt {
+  font-family: "Barlow", sans-serif;
+  color: #0a2953;
+}
+
+form input {
+  padding: 8px 5px;
+  margin-bottom: 10px;
+  font-size: 12px;
+
+  background: #f5f5f3;
+
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+form textarea {
+  font-size: 12px;
+  background: #f5f5f3;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}

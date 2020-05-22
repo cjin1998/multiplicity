@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="{{url_for('static', filename = 'style.css')}}" />
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Advent+Pro:wght@700&family=Barlow:wght@300&family=Playfair+Display&display=swap");
+</style>
+
+<body style="background-color: #f5f5f3">
+  <div id="main">
+    <img
+      src="{{url_for('static', filename='logo.jpg')}}"
+      alt="error"
+      height="200"
+      width="450"
+    />
+
+    <h1 class="heading">Welcome to the Multiplicity Portal!</h1>
+    <div id="content">
+      <div id="flashes">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="messages">
+          {% for msg in messages %}
+          <p id="flash">{{msg}}</p>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+      </div>
+    </div>
+    <p></p>
+
+    <form method="POST" action="{{url_for('forgot')}}">
+      <p
+        class="prompt"
+        style="text-align: center; font-family: 'Advent Pro', sans-serif;"
+      >
+        Forgot Your Password?
+      </p>
+      <p
+        class="prompt"
+        style="text-align: center; font-family: 'Advent Pro', sans-serif;"
+      >
+        <label
+          >Input the email you registered with to retrieve your password:
+          <p style="text-align: center">
+            <input name="email" type="email" step="any" placeholder="Email" />
+          </p>
+        </label>
+      </p>
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+</body>

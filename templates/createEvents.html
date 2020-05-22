@@ -1,0 +1,43 @@
+{% extends "privateBase.html" %} {% block main_content %}
+<h1>Create your own events</h1>
+
+<div id="form">
+  <form
+    method="POST"
+    action="{{url_for('createEvents', id=data['orgid'])}}"
+    enctype="multipart/form-data"
+  >
+    <p>
+      <label
+        >Event Name
+        <input name="eName" type="string" step="any" />
+      </label>
+    </p>
+    <p>
+      <label
+        >Event Date
+        <input name="eDate" type="date" id="start" />
+      </label>
+    </p>
+    <p>
+      <label
+        >Event Time
+        <input name="eTime" type="time" step="any" />
+      </label>
+    </p>
+    <p>
+      <label
+        >Location
+        <input name="location" type="string" step="any" />
+      </label>
+    </p>
+    <p>
+      <label
+        >Event Description
+        <input name="eBio" type="string" step="any" />
+      </label>
+    </p>
+    <p><input type="submit" value="Create Event" /></p>
+  </form>
+</div>
+{% endblock %}

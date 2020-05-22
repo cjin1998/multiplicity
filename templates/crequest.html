@@ -1,0 +1,116 @@
+{% extends "privateBase.html" %} {% block main_content %}
+
+<h1>Hi there <p2>[{{data['name']}}] </p2>!</h1>
+
+<h2>Manage your Collab Request</h2>
+<h2>
+  You can view the requests you have received and Delete the ones you have sent
+</h2>
+<button
+  class="collab-button"
+  type="submit"
+  style="float: center; margin-top: 20px"
+>
+  <a href="{{url_for('home', id=data['orgid'])}}">Back to Home</a>
+</button>
+<div id="content">
+  <div id="flashes">
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div id="messages">
+      {% for msg in messages %}
+      <p>{{msg}}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+  </div>
+</div>
+
+<div
+  id="form"
+  class="gradient-border"
+  style="width: 30rem; background-color:  #f5f5f3; margin-top:100px; margin-bottom:50px; float:left"
+>
+  <p>
+    <h7>Collab Requests Sent: ({{snum}}) </h7>
+  </p>
+  <div class="card-body">
+    {% if sends %}{% for collab in sends %}
+    <div id="form" style="width: 20rem;  border-style: solid;">
+      <div class="card-body">
+        <h5 class="card-title ">To {{collab['rName']}}</h5>
+        <h5 class="card-title ">Sent at {{collab['postedat']}}</h5>
+
+        <h5 class="card-title ">Message: {{collab['msg']}}</h5>
+        <button class="a-button">
+          <a href="{{url_for('dcollab', cid=collab['collabid'])}}"
+            >Delete This Collab Request</a
+          >
+        </button>
+      </div>
+    </div>
+
+    {% endfor %}{% else %}
+    <p>
+      <h7>You have not received any collab requests.</h7>
+    </p>
+
+    {% endif %}
+  </div>
+</div>
+
+<div
+  id="form"
+  class="gradient-border"
+  style="width: 30rem; background-color:  #f5f5f3; margin-top:100px; margin-bottom:50px; float:right"
+>
+  <p>
+    <h7>Collab Requests Received: ({{rnum}})</h7>
+  </p>
+  <div class="card-body">
+    {% if receives %}{% for collab in receives %}
+    <div id="form" style="width: 20rem;  border-style: solid;">
+      <div class="card-body">
+        <h5 class="card-title ">From {{collab['sName']}}</h5>
+        <h5 class="card-title ">Received at {{collab['postedat']}}</h5>
+
+        <h5 class="card-title ">Message: {{collab['msg']}}</h5>
+      </div>
+    </div>
+
+    {% endfor %}{% else %}
+    <p>
+      <h7>You have not sent any collab requests.</h7>
+    </p>
+
+    {% endif %}
+  </div>
+</div>
+<!-- <p>
+  ------------------------------------------------------------------------------------------------
+</p>
+<div class="card-body">
+  <p>
+    <h8 class="card-title">Collab requests sent:</h8>
+  </p>
+
+  {% if sends %}{% for collab in sends %}
+  <div id="form" style="width: 10rem;">
+    <div class="card-body">
+      <h5>receiver: {{collab['rName']}}</h5>
+      <h5>msg: {{collab['msg']}}</h5>
+      <button class="a-button">
+        <a href="{{url_for('dcollab', cid=collab['collabid'])}}"
+          >Delete This Collab Request</a
+        >
+      </button>
+    </div>
+  </div>
+  {% endfor %}{% else %}
+  <p>
+    <h7>You have not sent any collab requests.</h7>
+  </p>
+
+  {% endif %}
+</div> -->
+
+{% endblock %}

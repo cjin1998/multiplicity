@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page_title }}</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename = 'style.css')}}"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Advent+Pro:wght@700&family=Barlow:wght@300&family=Playfair+Display&display=swap");
+    </style>
+    {% block head_stuff %} {% endblock %}
+  </head>
+
+  <body>
+    <img
+      class="upperleftgreen"
+      src="{{url_for('static', filename='green.jpg')}}"
+      alt="error"
+    />
+    <div id="rec" style="width: 35rem; ">
+      <div id="navigation">
+        <ul>
+          <li>
+            <a class="btext" href="{{url_for('home', id=data['orgid'])}}"
+              >Home
+            </a>
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('resources', id=data['orgid'])}}"
+              >Resources</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('events', id=data['orgid'])}}"
+              >Events</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('members', id=data['orgid'])}}"
+              >Profiles</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('pforum', id=data['orgid'])}}"
+              >Forum</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('logout', id=data['orgid'])}}"
+              >Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  <div id="content">
+      <div id="flashes">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="messages">
+          {% for msg in messages %}
+          <p>{{msg}}</p>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+      </div>
+    </div>
+ -->
+    {% block main_content %}
+    <h1>Welcome!</h1>
+
+    {% endblock %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </body>
+</html>

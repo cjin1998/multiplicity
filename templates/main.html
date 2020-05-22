@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="{{url_for('static', filename = 'style.css')}}" />
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Advent+Pro:wght@700&family=Barlow:wght@300&family=Playfair+Display&display=swap");
+</style>
+<body style="background-color: #f5f5f3">
+  <div id="main">
+    <img
+      src="{{url_for('static', filename='logo.jpg')}}"
+      alt="error"
+      height="200"
+      width="450"
+    />
+
+    <h1 class="heading">Welcome to the Multiplicity Portal!</h1>
+    <div id="content">
+      <div id="flashes">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="messages">
+          {% for msg in messages %}
+          <p id="flash">{{msg}}</p>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+      </div>
+    </div>
+
+    <form id="loginform" action="{{url_for('login')}}" method="post">
+      <p>
+        <input type="email" placeholder="Email" name="username" required />
+      </p>
+      <p>
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          required
+        />
+      </p>
+      <button type="submit">Login</button>
+    </form>
+    <p></p>
+
+    <form method="POST" action="{{url_for('send_mail')}}">
+      <p
+        class="prompt"
+        style="text-align: center; font-family: 'Advent Pro', sans-serif;"
+      >
+        Don't have an account?
+      </p>
+      <p
+        class="prompt"
+        style="text-align: center; font-family: 'Advent Pro', sans-serif;"
+      >
+        <label
+          >Put down your email to recieve a link to join us:
+          <p style="text-align: center">
+            <input name="email" type="email" step="any" placeholder="Email" />
+          </p>
+        </label>
+      </p>
+      <input type="submit" value="Join us" />
+    </form>
+  </div>
+  <h><a href="{{url_for('forgot')}}">Forgot Your Password?</a></h>
+</body>

@@ -1,0 +1,40 @@
+{% extends "privateBase.html" %} {% block main_content %}
+
+<div id="content">
+  <div id="flashes">
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div id="messages">
+      {% for msg in messages %}
+      <p style="color:red; text-align: center">{{msg}}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+  </div>
+</div>
+
+<h2 class="query">Search by Name</h2>
+<div id="form">
+  <form method="POST" action="{{url_for('members', id=orgInfo['orgid'])}}">
+    <label for="search-name">Name: </label>
+    <input name="search-name" value="" />
+    <input type="submit" name="submit-btn" value="Search" />
+  </form>
+</div>
+
+<h1>Directory of Orgnizations</h1>
+
+{% for data in member_data %}
+<div data-mid="{{data['eid']}}" id="form" class="gradient-border" style="width: 40rem; margin-bottom: 50px">
+  <div class="card-body">
+    <a href={{url_for('singleP', id=orgInfo['orgid'], vid=data['orgid'])}}><h7 class="orgName">{{data['name']}}</h7></a>
+   
+<p>
+  <img src="{{url_for('pic', id=data['orgid'])}}" alt="error" width="250" height="200" style="margin-top: 20px"/>
+</p>
+<h5 style="font-size: 150%">About Us: {{data['bio']}}</h5>
+<a href={{url_for('singleP', id=orgInfo['orgid'], vid=data['orgid'])}}>Learn more</a>
+</div></div>
+<p></p>
+
+{% endfor %}
+{% endblock %}

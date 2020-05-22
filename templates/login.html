@@ -1,0 +1,31 @@
+{% block main_content %}
+
+<div id="content">
+  <div id="flashes">
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div id="messages">
+      {% for msg in messages %}
+      <p>{{msg}}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+  </div>
+</div>
+
+<div id="session-status" style="display:none">
+  <h1 id="login-status">Not Logged In <span id="userid"></span></h1>
+</div>
+
+<p>Please log in to access more information.</p>
+
+<form id="loginform" action="{{url_for('login')}}" method="post">
+  <h2>Login</h2>
+  <p>
+    <label>Email: <input type="int" name="username" required/></label>
+  </p>
+  <p>
+    <label>Password: <input type="password" name="password" required/></label>
+  </p>
+  <p><button type="submit">Login</button></p>
+</form>
+{% endblock %}

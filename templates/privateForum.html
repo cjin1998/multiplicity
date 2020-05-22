@@ -1,0 +1,198 @@
+{% extends "privateBase.html" %} {% block main_content %}
+<h1>Hi there <p2>[{{data['name']}}]</p2> !</h1>
+<button type="submit">
+  <a href="{{url_for('ppost', id=data['orgid'])}}">Post a question</a>
+</button>
+
+<div id="content" style="margin-top: 20px">
+  <div id="flashes">
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div id="messages">
+      {% for msg in messages %}
+      <p style="color:red; text-align: center">{{msg}}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+  </div>
+</div>
+
+{% if username == 'admin' %} {% for data in post_data %}
+<div
+  pid="{{data['pid']}}"
+  id="form"
+  class="gradient-border"
+  style="width: 30rem; margin-top: 50px; margin-bottom:50px"
+>
+  <div class="card-body">
+    <h5 class=" timess pid">
+      Post Time: {{data['postedatt']}}
+    </h5>
+    <h5 class="card-title pid">Posted by: {{data['poster']}}</h5>
+    <h5 class="card-title theme">Title: {{data['theme']}}</h5>
+    <div>
+      <p class="card-text thing">{{data['thing']}}</p>
+    </div>
+  </div>
+  <button class="show-comment-button">Show Comment</button>
+  <div pid="{{data['pid']}}" class="comments" id="comments"></div>
+  <!-- <button class="comment-button">Comment</button> -->
+  <div class="comment" id="comment" style="float: right;">
+    <input
+      pid="{{data['pid']}}"
+      name="theme"
+      id="box"
+      type="string"
+      step="any"
+    />
+    <button class="submit-comment">Submit Comment</button>
+  </div>
+  <button class="a-button">
+    <a href="{{url_for('dpost', pid=data['pid'])}}">Delete Post</a>
+  </button>
+</div>
+<div>
+  <p></p>
+</div>
+{% endfor %} {% else %} {% for data in post_data %}
+
+<div
+  pid="{{data['pid']}}"
+  id="form"
+  class="gradient-border"
+  style="width: 30rem; margin-top: 50px; margin-bottom:50px"
+>
+  <div class="card-body">
+    <h5 class=" timess pid">
+      Post Time: {{data['postedatt']}}
+    </h5>
+    <h5 class="card-title pid">Posted by: {{data['poster']}}</h5>
+    <h5 class="card-title theme">Title: {{data['theme']}}</h5>
+    <div>
+      <p class="card-text thing">{{data['thing']}}</p>
+    </div>
+  </div>
+  <button class="show-comment-button">Show Comment</button>
+  <div pid="{{data['pid']}}" class="comments" id="comments"></div>
+  <!-- <button class="comment-button">Comment</button> -->
+  <div class="comment" id="comment" style="float: right;">
+    <input
+      pid="{{data['pid']}}"
+      name="theme"
+      id="box"
+      type="string"
+      step="any"
+    />
+    <button class="submit-comment">Submit Comment</button>
+  </div>
+</div>
+<div>
+  <p></p>
+</div>
+{% endfor %} {% endif %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+  /*hides the comment input box*/
+  //$(".comment").hide();
+  /*==hides the comments*/
+  $(".comments").hide();
+  //var hidden = true;
+  var hiddens = true;
+
+  /*When the comment button is clicked, a input box is shown for logged in user to input comment to the question*/
+  /* $(".comment-button").on("click", function(event) {
+    if (hidden) {
+      $(event.target)
+        .closest("div")
+        .find("#comment")
+        .show();
+      hidden = false;
+    } else {
+      $(event.target)
+        .closest("div")
+        .find("#comment")
+        .hide();
+      hidden = true;
+    }
+  });
+ */
+  /*when the show comment button is clicked, the comments for the post show up. the button also toggles*/
+  $(".show-comment-button").on("click", function(event) {
+    if (hiddens) {
+      var pid = $(event.target)
+        .closest("div")
+        .find("#comments")
+        .attr("pid");
+      getData(pid);
+      $(event.target)
+        .closest("div")
+        .find("#comments")
+        .show();
+      hiddens = false;
+      $(event.target).text("hide comment");
+    } else {
+      $(event.target)
+        .closest("div")
+        .find("#comments")
+        .hide();
+      hiddens = true;
+      $(event.target).text("show comment");
+    }
+  });
+
+  //gets the comments with the specified pid
+  function getData(pid) {
+    $.get("{{url_for('commentAjax')}}", { postid: pid }, show, "json");
+  }
+
+  //appends the comment to the comment div
+  function show(obj) {
+    postid = obj.postid;
+    comments = obj.matches;
+    $("[pid=" + postid + "]")
+      .find(".comments")
+      .text("");
+    $("[pid=" + postid + "]")
+      .find(".comments")
+      .append("<p>Here are the comments: </p>");
+    for (i = 0; i < comments.length; i++) {
+      entry = comments[i];
+      comment = "\n    " + entry["content"];
+      $("[pid=" + postid + "]")
+        .find(".comments")
+        .append("<p>" + comment + "</p>");
+    }
+  }
+
+  //when the submit button is clicked, a comment gets inserted into the comment database
+  $(".submit-comment").on("click", function(event) {
+    var comment = $(event.target)
+      .closest("div")
+      .find("#box")
+      .val();
+    var postid = $(event.target)
+      .closest("div")
+      .find("#box")
+      .attr("pid");
+    sendData(postid, comment);
+  });
+
+  //function to POST data to back end. This should be sending data to the rateMovieAjax function in app.py
+  function sendData(postid, comment) {
+    $.post(
+      "{{url_for('commentAjax')}}",
+      { cu: postid, comment: comment },
+      update_page,
+      "json"
+    );
+  }
+  //updates page so the new comment shows up
+  function update_page(obj) {
+    postid = obj.postid;
+    comment = "\n" + obj.comment;
+    $("[pid=" + postid + "]")
+      .find(".comments")
+      .append("<p>" + comment + "</p>");
+  }
+</script>
+{% endblock %}

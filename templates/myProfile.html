@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page_title }}</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename = 'style.css')}}"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Advent+Pro:wght@700&family=Barlow:wght@300&family=Playfair+Display&display=swap");
+    </style>
+  </head>
+
+  <body style="background-color:  #f5f5f3;">
+    <div id="rec" style="width: 35rem;">
+      <div id="navigation">
+        <ul>
+          <li>
+            <a class="btext" href="{{url_for('home', id=data['orgid'])}}"
+              >Home
+            </a>
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('resources', id=data['orgid'])}}"
+              >Resources</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('events', id=data['orgid'])}}"
+              >Events</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('members', id=data['orgid'])}}"
+              >Profiles</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('pforum', id=data['orgid'])}}"
+              >Forum</a
+            >
+          </li>
+          <li>
+            <a class="btext" href="{{url_for('logout', id=data['orgid'])}}"
+              >Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <img
+      class="upperleft"
+      src="{{url_for('static', filename='white.jpg')}}"
+      alt="error"
+    />
+
+    <h1>Hi there <p2>[{{data['name']}}]</p2> !</h1>
+
+    <h1>Welcome to your profile page</h1>
+
+    <div id="content">
+      <div id="flashes">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="messages">
+          {% for msg in messages %}
+          <p style="color:red; text-align: center">{{msg}}</p>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+      </div>
+    </div>
+
+    <div
+      class="gradient-border"
+      id="form"
+      style="width: 60rem; background-color: #cceba3; margin-top: 50px"
+    >
+      <button
+        class="collab-button"
+        type="submit"
+        style="float:right; margin-right: 15px"
+      >
+        <a href="{{url_for('home', id=data['orgid'])}}">Back to Home</a>
+      </button>
+      <button
+        class="collab-button"
+        type="submit"
+        style="float:right; margin-right: 15px"
+      >
+        <a href="{{url_for('update', id=data['orgid'])}}">Update Org Profile</a>
+      </button>
+      <button
+        class="collab-button"
+        type="submit"
+        style="float:right; margin-right: 15px"
+      >
+        <a href="{{url_for('addStaff', id=data['orgid'])}}">Add staff</a>
+      </button>
+
+      <div class="card-body">
+        <h7 class="orgName" style="font-size: 300%">{{data['name']}}</h7>
+
+        <p>
+          <img
+            src="{{url_for('pic', id=data['orgid'])}}"
+            alt="error"
+            width="250"
+            height="200"
+          />
+        </p>
+
+        <p6 class="card-text title">
+          About Us : <p6 class="entry">{{data['bio']}}</p6>
+        </p6>
+        <p></p>
+
+        <p6 class="title">
+          Link to Our Website : <p6 class="entry">{{data['link']}} </p6>
+        </p6>
+        <p></p>
+        <p6 class="card-text title"
+          >Email :
+          <p6 class="entry">{{data['orgMail']}}</p6>
+        </p6>
+        <p></p>
+        <p6 class="card-text title"
+          >Cell :
+          <p6 class="entry">{{data['cell']}}</p6>
+        </p6>
+        <p></p>
+        <h2 class="title" style="text-align: left;">Our Staff</h2>
+        <div id="container">
+          {% for staff in staff_data %}
+          <!-- <div id="form" style="width: 10rem; text-align: left "> -->
+          <div id="staff-card">
+            <div class="card-body">
+              <p>
+                <img
+                  style="border-radius: 50%;"
+                  src="{{url_for('spic', sid=staff['sid'])}}"
+                  alt="error"
+                  width="150"
+                  height="150"
+                />
+              </p>
+              <h5 style="font-size: 120%">Name: {{staff['sName']}}</h5>
+              <h5 style="font-size: 120%">Title: {{staff['sTitle']}}</h5>
+              <h5 style="font-size: 120%">Email: {{staff['sEmail']}}</h5>
+
+              <button class="a-button">
+                <a href="{{url_for('dstaff', sid=staff['sid'])}}"
+                  >Delete Staff</a
+                >
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

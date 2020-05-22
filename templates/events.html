@@ -1,0 +1,84 @@
+{% extends "privateBase.html" %} {% block main_content %}
+
+<div id="content">
+  <div id="flashes">
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div id="messages">
+      {% for msg in messages %}
+    <p style="color:red; text-align: center">{{msg}}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+  </div>
+</div>
+
+
+
+<h2 class="query">Search by Event Name or Location, or Select Date for Events</h2>
+
+
+<div id="form" >
+  <form method="POST" action="{{url_for('events', id=orgInfo['orgid'])}}">
+    <label for="search-event">Event Name/Location </label>
+    <input name="search-event" value="" />
+    <p>
+      <label>Date
+        <input name="search-date" type="date" />
+      </label>
+    </p>
+    <input type="submit" name="submit-btn" value="Search" />
+  </form>
+</div>
+
+<button type="submit">
+  <a href="{{url_for('createEvents', id=orgInfo['orgid'])}}">Create an event</a>
+</button>
+
+<h1>List of Events:</h1>
+
+  {% for data in events_data %}
+<div id="form" class="gradient-border" style="width: 40rem; margin-bottom:50px">
+<div class="card-body" data-mid="{{data['eid']}}">
+  <p><h7 class="card-title eName">Event Name : <p3>{{data['eName']}} </p3></h7></p>
+  <p><h7 class="card-title ">Organized by : <a href={{url_for('singleP', id=orgInfo['orgid'], vid=data['orgid'])}}>
+    <p3>{{data['orgName']}}</p3>
+  </a></h7></p>
+  
+  <p><h7 class="card-title eDate eTime">Time : <p3>{{data['eDate']}} {{data['eTime']}}</p3></h7></p>
+  <p><h7 class="card-title location">Location : <p3> {{data['location']}}</p3></h7></p>
+  <p><h7 class="card-title eBio">Event Description : <p3>{{data['eBio']}} </p3></h7></p>
+  <p><h7 class="card-title" >RSVP'd : <p3 class="rsvpd">{{data['rsvp']}}</p3></h7></p>
+  <!-- <h7 class="card-title rsvp"><a href={{url_for('rsvp', eid=data['eid'])}}>   RSVP</a></h7> -->
+  <button class="rsvp-button">RSVP to This Event</button>
+  
+
+</div>
+</div>
+<p></p>
+
+  {% endfor %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+  $(".card-body").on("click", ".rsvp-button", function (event) {
+    var people = prompt('How many people from your organization would like to attend this event?'); 
+    var eid =  $(this).closest("div").attr('data-mid');
+    sendData(people, eid);
+  });
+
+  function sendData(people, eid) {
+      console.log("Sending people " + people + " and eid " + eid + " to the back end");
+      $.post("{{url_for('rsvp')}}", { 'eid': eid, 'num': people }, update_page, 'json');
+    }
+
+  function update_page(obj) {
+        eid = obj.eid;
+        num = obj.num;
+        $("[data-mid=" + eid + "]").find(".rsvpd").text(num);
+    }
+</script>
+
+{% endblock %}
+
+</body>
+
+</html>
