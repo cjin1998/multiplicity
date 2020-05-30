@@ -1,4 +1,4 @@
-use sjin;
+USE sjin$sjin;
 drop table if exists events;
 create table events(
     eid int NOT NULL AUTO_INCREMENT,
@@ -12,4 +12,4 @@ create table events(
     eBio varchar(500),
     rsvp int default 0,
     primary key (eid)
-    ) 
+    )

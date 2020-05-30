@@ -1,4 +1,4 @@
-use sjin;
+USE sjin$sjin;
 drop table if exists staff;
 create table staff(
     sid int NOT NULL AUTO_INCREMENT,

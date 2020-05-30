@@ -43,14 +43,13 @@
   <p><h7 class="card-title ">Organized by : <a href={{url_for('singleP', id=orgInfo['orgid'], vid=data['orgid'])}}>
     <p3>{{data['orgName']}}</p3>
   </a></h7></p>
-  
+
   <p><h7 class="card-title eDate eTime">Time : <p3>{{data['eDate']}} {{data['eTime']}}</p3></h7></p>
   <p><h7 class="card-title location">Location : <p3> {{data['location']}}</p3></h7></p>
   <p><h7 class="card-title eBio">Event Description : <p3>{{data['eBio']}} </p3></h7></p>
   <p><h7 class="card-title" >RSVP'd : <p3 class="rsvpd">{{data['rsvp']}}</p3></h7></p>
-  <!-- <h7 class="card-title rsvp"><a href={{url_for('rsvp', eid=data['eid'])}}>   RSVP</a></h7> -->
   <button class="rsvp-button">RSVP to This Event</button>
-  
+
 
 </div>
 </div>
@@ -60,14 +59,15 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
   $(".card-body").on("click", ".rsvp-button", function (event) {
-    var people = prompt('How many people from your organization would like to attend this event?'); 
+    var people = prompt('How many people from your organization would like to attend this event?');
     var eid =  $(this).closest("div").attr('data-mid');
     sendData(people, eid);
   });
 
+
   function sendData(people, eid) {
       console.log("Sending people " + people + " and eid " + eid + " to the back end");
-      $.post("{{url_for('rsvp')}}", { 'eid': eid, 'num': people }, update_page, 'json');
+     $.post("{{url_for('rsvp',id=orgInfo['orgid'])}}", { 'eid': eid, 'num': people }, update_page, 'json');
     }
 
   function update_page(obj) {

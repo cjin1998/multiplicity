@@ -1,4 +1,4 @@
-use sjin;
+USE sjin$sjin;
 drop table if exists collab;
 create table collab(
     collabid int NOT NULL AUTO_INCREMENT,

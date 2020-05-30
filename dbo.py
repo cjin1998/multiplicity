@@ -61,30 +61,15 @@ def read_cnf(cnf_file=None):
     file. Return a dictionary with the necessary information to connect to
     a database. See the connect() function.'''
     if cnf_file is None:
-        cnf_file = os.path.expanduser('~/Desktop/beta_final/.my.cnf')
+        cnf_file = os.path.expanduser('~/multiplicity/my.cnf')
     else:
         cnf_file = os.path.expanduser(cnf_file)
     cnf = file_contents(cnf_file)
-    credentials = {}
-    # the key is the name used in the CNF file;
-    # the value is the name used in the MySQLdb.connect() function
-    mapping = {'host':'host',
-               'user':'user',
-               'password':'passwd',
-               'database':'db'}
-    for key in ('host', 'user', 'password', 'database' ):
-        cred_key = mapping[key]
-        regex = r"\b{k}\s*=\s*[\'\"]?(\w+)[\'\"]?\b".format(k=key)
-        # print 'regex',regex
-        p = re.compile(regex)
-        m = p.search(cnf)
-        if m:
-            credentials[ cred_key ] = m.group(1)
-        elif key == 'host' or key == 'database':
-            credentials[ cred_key ] = 'not specified in ' + cnf_file
-        else:
-            raise Exception('Could not find key {k} in {f}'
-                            .format(k=key,f=cnf_file))
+    credentials = {'host':'sjin.mysql.pythonanywhere-services.com',
+               'user':'sjin',
+               'passwd':'8hZ47vU3',
+               'db':'sjin$sjin'}
+
     return credentials
 
 def connect(dsn):

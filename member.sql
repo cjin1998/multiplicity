@@ -1,4 +1,4 @@
-use sjin;
+USE sjin$sjin;
 drop table if exists member;
 create table member(
     orgid int NOT NULL AUTO_INCREMENT,

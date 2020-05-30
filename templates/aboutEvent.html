@@ -5,7 +5,7 @@
   <h2 style="font-size: 200%">Manage your events</h2>
 
   <button class="collab-button" type="submit" style="float: center; margin-top: 20px">
-    <a href="{{url_for('home', id=data['orgid'])}}">Back to Home</a>
+    <a href="{{url_for('myEvents', id=data['orgid'])}}">Back to My Events</a>
   </button>
   <div id="content">
     <div id="flashes">
@@ -19,40 +19,27 @@
     </div>
   </div>
 
-  <div class="card-body">
-    {% if events %} {% for event in events %}
-    <div
-      id="form"
-      class="gradient-border"
-      style="width: 40rem; margin-bottom:50px; margin-top: 40px"
-    >
-      <div class="card-body" data-mid="{{data['eid']}}">
-        <p>
-          <h7 class="card-title eName"
-            >Event Name : <p3>{{event['eName']}} </p3>
-          </h7>
-        </p>
-        <p>
-          <h7 class="card-title"
-            >RSVP'd : <p3 class="rsvpd">{{event['rsvp']}}</p3>
-          </h7>
-        </p>
+<div class="card-body">
+    {% if rsvps %} {% for rsvp in rsvps %}
 
-        <button class="a-button">
-          <a href="{{url_for('aboutEvent', id=data['orgid'], eid=event['eid'])}}">Manage Event</a>
-        </button>
-      </div>
-    </div>
-    <p></p>
+   <p>
+          <h7 class="card-title eName"
+            > From {{rsvp['orgName']}} :<p3>{{rsvp['rsvp']}} attending</p3>
+          </h7>
+        </p>
 
     {% endfor %} {% else %}
     <p></p>
     <h7 style="text-align: center; float: center"
-      >You have not started any events.</h7
+      >No one has RSVP'd to this event.</h7
     >
 
     {% endif %}
   </div>
+
+ <button class="a-button">
+          <a href="{{url_for('devent', eid=event['eid'])}}">Delete Event</a>
+        </button>
 
   <p></p>
   {% endblock %}
