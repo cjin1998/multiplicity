@@ -19,12 +19,12 @@
     </div>
   </div>
 
-<div class="card-body">
+<div class="card-body"  style="text-align: center; float: center">
     {% if rsvps %} {% for rsvp in rsvps %}
 
-   <p>
-          <h7 class="card-title eName"
-            > From {{rsvp['orgName']}} :<p3>{{rsvp['rsvp']}} attending</p3>
+   <p style="text-align: center; float: center">
+          <h7 class="card-title eName" style="text-align: center; float: center"
+            > From {{rsvp['orgName']}} : <p3>{{rsvp['rsvp']}} attending</p3>
           </h7>
         </p>
 

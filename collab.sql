@@ -8,5 +8,6 @@ create table collab(
     vorgid int,
     rName varchar(50),
     msg varchar(500),
+    accepted varchar(50),
     primary key (collabid)
 )

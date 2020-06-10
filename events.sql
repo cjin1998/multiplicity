@@ -9,6 +9,10 @@ create table events(
     eDate date,
     eTime time,
     location varchar(50),
+    address1 varchar(50),
+    address2 varchar(50),
+    eState varchar(50),
+    eZip varchar(50),
     eBio varchar(500),
     rsvp int default 0,
     primary key (eid)

@@ -22,9 +22,14 @@ def insertPost(conn, postedat, poster, theme, thing):
     curs.execute('insert into post (postedat, poster, theme, thing) values (%s, %s, %s, %s)', [postedat, poster, theme, thing])
     return True
 
-def getEvents(conn,eName):
+def getEvents(conn,eName, ask2):
     curs = dbo.dictCursor(conn)
-    curs.execute("select * from events where eDate>= CURDATE() AND (eName like %s OR location like %s OR eDate like %s) order by eDate ASC", ['%'+eName+'%', '%'+eName+'%', '%'+eName+'%' ])
+    curs.execute("select * from events where eDate>= CURDATE() AND (eName like %s OR location like %s) order by eDate ASC", ['%'+eName+'%', '%'+eName+'%'])
+    return curs.fetchall()
+
+def getDateEvents(conn, ask1, ask2):
+    curs = dbo.dictCursor(conn)
+    curs.execute("select * from events where eDate>= CURDATE() AND (eDate BETWEEN %s AND %s) order by eDate ASC", [ask1, ask2 ])
     return curs.fetchall()
 
 def getAllEvents(conn):
@@ -32,9 +37,9 @@ def getAllEvents(conn):
     curs.execute("select * from events where eDate>= CURDATE() order by eDate ASC")
     return curs.fetchall()
 
-def insertEvents(conn, eName, orgid, orgName, eDate, eTime, location, eBio):
+def insertEvents(conn, eName, orgid, orgName, eDate, eTime, location, address1, address2, eState, eZip, eBio):
     curs = dbo.dictCursor(conn)
-    curs.execute('insert into events (eName, orgid, orgName, eDate, eTime, location, eBio) values (%s, %s, %s, %s, %s, %s, %s)', [eName, orgid, orgName, eDate, eTime, location, eBio])
+    curs.execute('insert into events (eName, orgid, orgName, eDate, eTime, location, address1, address2, eState, eZip, eBio) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', [eName, orgid, orgName, eDate, eTime, location, address1, address2, eState, eZip, eBio])
     return True
 
 def getMembers(conn,name):
@@ -57,9 +62,9 @@ def addStaff(conn, orgid, sName, sEmail, sTitle, filename):
     curs.execute('insert into staff (orgid, sName, sEmail, sTitle,pic) values (%s, %s, %s, %s, %s)', [orgid, sName, sEmail, sTitle, filename])
     return True
 
-def collab(conn, orgid, sName, vorgid, rName, msg):
+def collab(conn, orgid, sName, vorgid, rName, msg, accepted):
     curs = dbo.dictCursor(conn)
-    curs.execute('insert into collab (orgid, sName, vorgid, rName, msg) values (%s, %s, %s, %s, %s)', [orgid, sName, vorgid, rName, msg])
+    curs.execute('insert into collab (orgid, sName, vorgid, rName, msg, accepted) values (%s, %s, %s, %s, %s, %s)', [orgid, sName, vorgid, rName, msg, accepted])
     return True
 
 def updateMemberPic(conn, id, name, orgMail, password, bio, link, cell, filename):

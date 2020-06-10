@@ -13,8 +13,10 @@
 
 .upperleftgreen {
   position: absolute;
-  top: -60px;
+  top: -120px;
   left: -55px;
+  width: 30%;
+  height: auto;
 }
 
 .heading {
@@ -25,13 +27,15 @@
 
 #flash {
   text-align: center;
+  color: #0a2953;
+  text-decoration: underline;
 }
 
 body {
   position: relative;
   text-align: center;
   margin: 20px 2em;
-  background-color: #cceba3;
+
 }
 
 .btext {
@@ -55,8 +59,9 @@ p3 {
 }
 
 #messages {
-  color: red;
+  color: #0a2953;
   font-style: italic;
+  text-decoration: underline;
 }
 
 p10 {

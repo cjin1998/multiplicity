@@ -22,7 +22,8 @@ app.config.update(
 	MAIL_PORT=465,
 	MAIL_USE_SSL=True,
 	MAIL_USERNAME = 'christinejin9@gmail.com',
-	MAIL_PASSWORD = '8hZ47vU3'
+	MAIL_PASSWORD = '8hZ47vU3',
+    USE_HTTPS = False
 	)
 mail = Mail(app)
 
@@ -63,7 +64,7 @@ def main():
     return render_template('main.html')
 
 def sendmail(email, message, title):
-    msg = Message(title, sender="outreach@multiplicity.io", recipients=[email])
+    msg = Message(title, sender="christinejin9@gmail.com", recipients=[email])
     msg.body = message
     mail.send(msg)
     return True
@@ -72,16 +73,23 @@ def sendmail(email, message, title):
 @app.route('/send_mail/', methods=["GET","POST"])
 def send_mail():
     email=request.form['email']
+    emailList = ["shuyijin@mit.edu", "8@gmail.com"]
     conn = lookup.getConn('sjin$sjin')
     curs = dbo.dictCursor(conn)
-    curs.execute('insert into member(orgMail) values (%s)', [email])
-    curs.execute('select orgid from member where orgMail=%s', [email])
-    row = curs.fetchone()
-    orgid = str(row['orgid'])
-    title= "Welcome to Multiplicity"
-    link="\nhttp://149.130.210.46:1234/register/"+orgid
-    message="here's the link to join multiplicity!" + link
-    sendmail(email, message, title)
+    if email in emailList:
+        curs.execute('insert into member(orgMail) values (%s)', [email])
+        curs.execute('select orgid from member where orgMail=%s', [email])
+        row = curs.fetchone()
+        orgid = str(row['orgid'])
+        title= "Register link"
+        link="\nhttp://sjin.pythonanywhere.com/register/"+orgid
+        message="Here's the link to join multiplicity!" + link
+        sendmail(email, message, title)
+    else:
+        title= "Instruction on How to Join Multiplicity"
+        link="message provided by Kaila"
+        message="Here's the instruction to join multiplicity!" + link
+        sendmail(email, message, title)
     flash("An email has been sent to your account.")
     conn.close()
     return redirect(request.referrer)
@@ -133,15 +141,19 @@ def register(id):
                 print('after save')
                 print(pic)
                 conn = lookup.getConn('sjin$sjin')
+                curs = dbo.dictCursor(conn)
                 insertSuccessful = lookup.updateMemberPic(conn, id, name, orgMail, password, bio, link, cell, filename)
-                conn.close()
+
                 if (insertSuccessful):
-                    flash("Successfully registered new org " + name)
+                    curs.execute('insert into noti (orgid, unchecked) values (%s, %s)', [id, 0])
+                    flash("Successfully registered new organization " + name)
                 else:
                     flash("Error registering")
+                conn.close()
                 return redirect(url_for("main"))
             else:
                 flash('Incorrect format for picture. Please upload .jpeg, .png, or .jpg.')
+                conn.close()
                 return redirect(request.referrer)
 
         else:
@@ -210,8 +222,20 @@ def home(id):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
-
     orgname=orgInfo['name']
+
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
+
 
     curs.execute('select * from staff where orgid=%s', [id])
     sInfo = curs.fetchall()
@@ -219,6 +243,7 @@ def home(id):
     a = curs.fetchone()
     if (a):
         time=a['postedat']
+        print("this is time")
         print(time)
         curs.execute('select * from collab where vorgid=%s AND postedat>= %s order by collabid DESC', [id, time])
         newcollab = curs.fetchall()
@@ -239,7 +264,7 @@ def home(id):
         pnum=0
         enum=0
         conn.close()
-    return render_template('myhome.html', data = orgInfo, staff_data = sInfo, new=newcollab, events=newevents, posts=newposts, cnum=cnum, enum=enum, pnum=pnum )
+    return render_template('myhome.html', unchecked = unchecked, data = orgInfo, staff_data = sInfo, new=newcollab, events=newevents, posts=newposts, cnum=cnum, enum=enum, pnum=pnum )
 
 @app.route('/myProfile/<id>')
 def myProfile(id):
@@ -249,8 +274,21 @@ def myProfile(id):
     orgInfo = curs.fetchone()
     curs.execute('select * from staff where orgid=%s', [id])
     sInfo = curs.fetchall()
+
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
+
     conn.close()
-    return render_template('myProfile.html', data = orgInfo, staff_data = sInfo)
+    return render_template('myProfile.html', unchecked = unchecked, data = orgInfo, staff_data = sInfo)
 
 @app.route('/myEvents/<id>')
 def myEvents(id):
@@ -260,8 +298,20 @@ def myEvents(id):
     orgInfo = curs.fetchone()
     curs.execute('select * from events where orgid=%s', [id])
     events = curs.fetchall()
+
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     conn.close()
-    return render_template('myEvents.html', data = orgInfo,  events = events)
+    return render_template('myEvents.html', unchecked = unchecked, data = orgInfo,  events = events)
 
 @app.route('/devent/<eid>/', methods=['GET','POST'])
 def devent(eid):
@@ -285,8 +335,19 @@ def aboutEvent(id, eid):
     event = curs.fetchone()
     curs.execute('select * from rsvps where eid=%s', [eid])
     rsvps = curs.fetchall()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     conn.close()
-    return render_template('aboutEvent.html', data = orgInfo,  event = event, rsvps = rsvps)
+    return render_template('aboutEvent.html', unchecked = unchecked, data = orgInfo,  event = event, rsvps = rsvps)
 
 @app.route('/pic/<id>')
 def pic(id):
@@ -295,7 +356,9 @@ def pic(id):
     curs.execute('select pic from member where orgid = %s', [id])
     row = curs.fetchone()
     conn.close()
-    return send_from_directory('/home/sjin/multiplicity/uploads',row['pic'])
+    resp = make_response(send_from_directory('/home/sjin/multiplicity/uploads',row['pic']))
+    resp.headers['Cache-Control'] = 'no-cache'
+    return resp
 
 @app.route('/spic/<sid>')
 def spic(sid):
@@ -311,16 +374,66 @@ def spic(sid):
 def crequest(id):
     conn = lookup.getConn('sjin$sjin')
     curs = dbo.dictCursor(conn)
+
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
-    curs.execute('select * from collab where orgid=%s', [id])
+    curs.execute('select * from collab where orgid=%s order by postedat DESC', [id])
     sends = curs.fetchall()
     snum=len(sends)
-    curs.execute('select * from collab where vorgid=%s', [id])
+    curs.execute('select * from collab where vorgid=%s order by postedat DESC', [id])
     receives = curs.fetchall()
     rnum=len(receives)
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     conn.close()
-    return render_template('crequest.html', data = orgInfo,  sends = sends, receives = receives, snum=snum, rnum=rnum)
+    return render_template('crequest.html', unchecked = unchecked, data = orgInfo,  sends = sends, receives = receives, snum=snum, rnum=rnum)
+
+
+@app.route('/noti/<id>/')
+def noti(id):
+    conn = lookup.getConn('sjin$sjin')
+    curs = dbo.dictCursor(conn)
+
+
+    curs.execute('select * from member where orgid=%s', [id])
+    orgInfo = curs.fetchone()
+
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    unchecked = noti['unchecked']
+    if (unchecked == 0):
+        newcollab = []
+        newrsvps=[]
+
+        cnum=0
+        rnum=0
+
+        curs.execute('delete from noti where orgid=%s', [id])
+        curs.execute('insert into noti (orgid, unchecked) values (%s, %s)', [id, 0])
+        conn.close()
+    else:
+        time=noti['postedat']
+        curs.execute('select * from collab where vorgid=%s AND postedat>= %s order by postedat DESC', [id, time])
+        newcollab = curs.fetchall()
+        cnum=len(newcollab)
+        curs.execute('select * from rsvps where orgid=%s AND postedat>= %s order by postedat DESC', [id, time])
+        newrsvps = curs.fetchall()
+        rnum=len(newrsvps)
+
+        curs.execute('delete from noti where orgid=%s', [id])
+        curs.execute('insert into noti (orgid, unchecked) values (%s, %s)', [id, 0])
+        conn.close()
+
+    return render_template('noti.html', unchecked = unchecked, data = orgInfo, new=newcollab, rsvps = newrsvps, cnum=cnum, rnum = rnum )
 
 
 
@@ -331,9 +444,20 @@ def update(id):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method=="GET":
         conn.close()
-        return render_template('update.html', data=orgInfo)
+        return render_template('update.html', unchecked = unchecked, data=orgInfo)
     else:
         name=request.form['name']
         orgMail=request.form['orgMail']
@@ -342,6 +466,7 @@ def update(id):
         link=request.form['link']
         cell=request.form['cell']
         pcheck=request.form['pcheck']
+
         if (password == pcheck):
             pic = request.files['pic']
             print('original pic')
@@ -376,12 +501,12 @@ def update(id):
                     return redirect(url_for("myProfile", id = id))
                 else:
                     flash('Incorrect format for picture. Please upload .jpeg, .png, or .jpg.')
-                    return render_template('update.html', data=orgInfo)
+                    return render_template('update.html', unchecked = unchecked, data=orgInfo)
 
 
         else:
             flash("Password does not match.")
-            return render_template('update.html', data=orgInfo)
+            return render_template('update.html', unchecked = unchecked, data=orgInfo)
 
 
 @app.route('/addStaff/<id>/', methods=['GET','POST'])
@@ -390,9 +515,20 @@ def addStaff(id):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method == 'GET':
         conn.close()
-        return render_template('addStaff.html', data=orgInfo)
+        return render_template('addStaff.html', unchecked = unchecked, data=orgInfo)
     elif request.method == 'POST':
         orgid = id
         sName=request.form['sName']
@@ -455,8 +591,19 @@ def singleP(id, vid):
     vorgInfo = curs.fetchone()
     curs.execute('select * from staff where orgid=%s', [vid])
     sInfo = curs.fetchall()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     conn.close()
-    return render_template('singleP.html', data = orgInfo, vdata = vorgInfo, staff_data = sInfo)
+    return render_template('singleP.html', unchecked = unchecked, data = orgInfo, vdata = vorgInfo, staff_data = sInfo)
 
 @app.route('/collab/<id>/<vid>', methods=['GET','POST'])
 def collab(id, vid):
@@ -466,9 +613,20 @@ def collab(id, vid):
     orgInfo = curs.fetchone()
     curs.execute('select * from member where orgid=%s', [vid])
     vorgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method == 'GET':
         conn.close()
-        return render_template('collab.html', data = orgInfo, vdata = vorgInfo)
+        return render_template('collab.html', unchecked = unchecked, data = orgInfo, vdata = vorgInfo)
     elif request.method == 'POST':
         orgid = id
         sName = orgInfo['name']
@@ -480,8 +638,9 @@ def collab(id, vid):
         message = msg
         sendmail(rMail, message, title)
         msg=request.form['msg']
+        accepted = None
         conn = lookup.getConn('sjin$sjin')
-        insertSuccessful = lookup.collab(conn, orgid, sName, vorgid, rName, msg)
+        insertSuccessful = lookup.collab(conn, orgid, sName, vorgid, rName, msg, accepted)
         if (insertSuccessful):
             conn.close()
             flash("Successfully sent collab request to " + rName)
@@ -489,6 +648,26 @@ def collab(id, vid):
             conn.close()
             flash("Error sending request")
         return redirect(url_for("members", id = id))
+
+@app.route('/confirm/<cid>', methods=['GET','POST'])
+def confirm(cid):
+    conn = lookup.getConn('sjin$sjin')
+    curs = dbo.dictCursor(conn)
+    status = "Confirmed"
+    curs.execute('update collab set accepted = %s where collabid = %s', [status, cid])
+    flash("Collab Request confirmed.")
+    conn.close()
+    return redirect(request.referrer)
+
+@app.route('/reject/<cid>', methods=['GET','POST'])
+def reject(cid):
+    conn = lookup.getConn('sjin$sjin')
+    curs = dbo.dictCursor(conn)
+    status = "Rejected"
+    curs.execute('update collab set accepted = %s where collabid = %s', [status, cid])
+    flash("Collab Request rejected.")
+    conn.close()
+    return redirect(request.referrer)
 
 
 @app.route('/rsvp/<id>', methods=['GET','POST'])
@@ -510,6 +689,10 @@ def rsvp(id):
     eDate=eInfo['eDate']
     eTime=eInfo['eTime']
     location=eInfo['location']
+    address1=eInfo['address1']
+    address2=eInfo['address2']
+    eState=eInfo['eState']
+    eZip=eInfo['eZip']
     eBio=eInfo['eBio']
     rsvp=eInfo['rsvp']
     people = request.form['num']
@@ -517,8 +700,8 @@ def rsvp(id):
     new = rsvp + num
     print('here')
     print(new)
-    curs.execute('insert into events values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE rsvp=%s', [eid, postedat, eName, orgid, orgName, eDate, eTime, location, eBio, new, new])
-    curs.execute('insert into rsvps (eid, orgName, rsvp) values (%s, %s, %s)', [eid, name, num])
+    curs.execute('insert into events values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE rsvp=%s', [eid, postedat, eName, orgid, orgName, eDate, eTime, location, address1, address2, eState, eZip, eBio, new, new])
+    curs.execute('insert into rsvps (eid, eName, orgName, rsvp, orgid) values (%s, %s, %s, %s, %s)', [eid, eName, name, num, orgid])
 
     conn.close()
     return jsonify({'error': False, 'eid': eid, 'num': new})
@@ -530,8 +713,19 @@ def resources(id):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     conn.close()
-    return render_template('resources.html', data = orgInfo)
+    return render_template('resources.html', unchecked = unchecked, data = orgInfo)
 
 
 #member table and search bar
@@ -542,6 +736,17 @@ def members(id, ask=None):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method == 'POST':
         ask = request.form['search-name']
         conn.close()
@@ -553,33 +758,74 @@ def members(id, ask=None):
             member = lookup.getMembers(conn, ask)
         conn.close()
         return render_template('member.html',
-                                member_data=member, orgInfo=orgInfo, data = orgInfo)
-
+                                member_data=member, orgInfo=orgInfo, data = orgInfo, unchecked = unchecked)
 
 @app.route('/events/<id>/',methods=["GET","POST"])
-@app.route('/events/<id>/<ask>', methods=["GET","POST"])
-def events(id, ask=None):
+@app.route('/events/<id>/<ask1>/', methods=["GET","POST"])
+@app.route('/events/<id>/<ask1>/<ask2>', methods=["GET","POST"])
+def events(id, ask1=None, ask2=None):
     conn = lookup.getConn('sjin$sjin')
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method == 'POST':
-        ask = request.form['search-event']
-        if(ask):
+        ask1 = request.form['search-event']
+        if(ask1):
+            print(ask1)
             conn.close()
-            return redirect(url_for('events', ask=ask, id=orgInfo['orgid']))
+            return redirect(url_for('events', ask1=ask1, ask2=None, id=orgInfo['orgid']))
         else:
-            ask = request.form['search-date']
+            ask1 = request.form['start-date']
+            ask2 = request.form['end-date']
             conn.close()
-            return redirect(url_for('events', ask=ask, id=orgInfo['orgid']))
+            return redirect(url_for('events', ask1=ask1,  ask2=ask2, id=orgInfo['orgid']))
     else:
-        if ask == None:
+        if ask1 == None:
             events = lookup.getAllEvents(conn)
         else:
-            events = lookup.getEvents(conn, ask)
+            if ask2 == None:
+                events = lookup.getEvents(conn, ask1, ask2)
+            else:
+                events = lookup.getDateEvents(conn, ask1, ask2)
         conn.close()
-        return render_template('events.html',
+        return render_template('events.html', unchecked = unchecked,
                                 events_data=events, orgInfo=orgInfo, data = orgInfo)
+
+
+@app.route('/singleEvent/<id>/<eid>', methods=['GET','POST'])
+def singleEvent(id, eid):
+    conn = lookup.getConn('sjin$sjin')
+    curs = dbo.dictCursor(conn)
+    curs.execute('select * from member where orgid=%s', [id])
+    orgInfo = curs.fetchone()
+    curs.execute('select * from events where eid=%s', [eid])
+    eventData = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
+    return render_template('singleEvent.html',
+                                unchecked = unchecked, edata = eventData, orgInfo=orgInfo, data = orgInfo)
+
+
 
 
 @app.route('/createEvents/<id>/', methods=['GET','POST'])
@@ -588,9 +834,20 @@ def createEvents(id):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method == 'GET':
         conn.close()
-        return render_template('createEvents.html', data=orgInfo)
+        return render_template('createEvents.html', unchecked = unchecked, data=orgInfo)
     elif request.method == 'POST':
         eName=request.form['eName']
         orgid = id
@@ -598,9 +855,13 @@ def createEvents(id):
         eDate=request.form['eDate']
         eTime=request.form['eTime']
         location=request.form['location']
+        address1 = request.form['address1']
+        address2 = request.form['address2']
+        eState = request.form['state']
+        eZip = request.form['zip']
         eBio=request.form['eBio']
         conn = lookup.getConn('sjin$sjin')
-        insertSuccessful = lookup.insertEvents(conn, eName, orgid, orgName, eDate, eTime, location, eBio)
+        insertSuccessful = lookup.insertEvents(conn, eName, orgid, orgName, eDate, eTime, location, address1, address2, eState, eZip, eBio)
         if (insertSuccessful):
             flash("Successfully created a new event: [" + eName + "]")
         else:
@@ -618,9 +879,20 @@ def pforum(id):
     orgInfo = curs.fetchone()
     username = orgInfo['name']
     posts = lookup.getAllPosts(conn)
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     conn.close()
     return render_template('privateForum.html',
-                            post_data=posts, data=orgInfo, username = username)
+                            unchecked = unchecked, post_data=posts, data=orgInfo, username = username)
 
 
 #insert a post on private page
@@ -630,9 +902,20 @@ def ppost(id):
     curs = dbo.dictCursor(conn)
     curs.execute('select * from member where orgid=%s', [id])
     orgInfo = curs.fetchone()
+    curs.execute('select * from noti where orgid=%s', [id])
+    noti = curs.fetchone()
+    notitime=noti['postedat']
+    curs.execute('select * from collab where vorgid=%s AND postedat>= %s', [id, notitime])
+    collabsss = curs.fetchall()
+    ccnum=len(collabsss)
+    curs.execute('select * from rsvps where orgid=%s AND postedat>= %s', [id, notitime])
+    eventssss = curs.fetchall()
+    eenum=len(eventssss)
+    unchecked = ccnum + eenum
+    curs.execute('update noti set unchecked = %s where orgid = %s', [unchecked, id])
     if request.method == 'GET':
         conn.close()
-        return render_template('insertPPost.html', data = orgInfo)
+        return render_template('insertPPost.html', unchecked = unchecked, data = orgInfo)
     elif request.method == 'POST':
         now = datetime.now()
         postedat = now.strftime("%d/%m/%Y %H:%M:%S")

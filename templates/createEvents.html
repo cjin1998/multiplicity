@@ -27,16 +27,47 @@
     </p>
     <p>
       <label
-        >Location
+        >Address (Line 1)
+        <input name="address1" type="string" step="any" />
+      </label>
+    </p>
+    <p>
+      <label
+        >Address (Line 2)
+        <input name="address2" type="string" step="any" />
+      </label>
+    </p>
+    <p>
+      <label
+        >City
         <input name="location" type="string" step="any" />
       </label>
     </p>
     <p>
       <label
-        >Event Description
-        <input name="eBio" type="string" step="any" />
+        >State
+        <input name="state" type="string" step="any" />
       </label>
     </p>
+    <p>
+      <label
+        >Zip Code
+        <input name="zip" type="string" step="any" />
+      </label>
+    </p>
+
+     <p>
+          <label
+            >Event Description
+            <textarea
+              rows="4"
+              cols="50"
+              name="eBio"
+              type="string"
+              step="any"
+            ></textarea>
+          </label>
+        </p>
     <p><input type="submit" value="Create Event" /></p>
   </form>
 </div>

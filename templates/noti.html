@@ -1,0 +1,86 @@
+{% extends "privateBase.html" %} {% block main_content %}
+
+<div id="content">
+      <div id="flashes">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="messages">
+          {% for msg in messages %}
+          <p style="color:#0a2953; text-align: center">{{msg}}</p>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+      </div>
+    </div>
+    <button class="collab-button" type="submit" style=" margin-right: 30px">
+      <a href="{{url_for('myEvents', id=data['orgid'])}}">Manage My Events</a>
+    </button>
+     <button
+      class="collab-button"
+      type="submit"
+      style="margin-bottom: 50px; margin-right: 30px"
+    >
+      <a href="{{url_for('crequest', id=data['orgid'])}}">Manage My Collab Requests</a>
+    </button>
+<div
+      id="form"
+      class="gradient-border"
+      style="width: 60rem; background-color: #dc7f54; "
+    >
+      <div class="card-body">
+        <h7 class="card-title">Notifications</h7>
+        {% if cnum+rnum==0 %}
+        <p>
+          <h7 class="card-title" style="font-style: italic;"
+            >You don't have any notifications</h7
+          >
+        </p>
+        {% endif %} {% if new %}
+        <div id="form" style="width: 50rem; margin-top: 50px">
+          <p>
+            <h7
+              >New Collab Requests:
+              <h7 style="color:red; font-size: 100%">({{cnum}})</h7></h7
+            >
+          </p>
+          <ul>
+            {% for collab in new %}
+            <li>
+              <h5 class="card-title ">
+                * At {{collab['postedat']}},
+                <p10>{{collab['sName']}}</p10>
+                would like to collaborate on an event.
+              </h5>
+            </li>
+            {% endfor %}
+          </ul>
+          <p style="font-family: 'Playfair Display', serif;">
+            Check your email for more information.
+          </p>
+        </div>
+        {% endif %} {% if rsvps %}
+        <div id="form" style="width: 50rem; margin-top: 50px">
+          <p>
+            <h7
+              >New rsvps:
+              <h7 style="color:red; font-size: 100%">({{rnum}})</h7></h7
+            >
+          </p>
+          <ul>
+            {% for rsvp in rsvps %}
+
+            <li>
+              <h5 class="card-title ">
+                * At <p10>{{rsvp['postedat']}}</p10> :
+                <p10>{{rsvp['orgName']}}</p10> RSVP'd
+                <p10>{{rsvp['rsvp']}} </p10> people to your event
+                <p10>{{rsvp['eName']}} </p10> .
+              </h5>
+            </li>
+
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+     {% endblock %}

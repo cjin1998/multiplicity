@@ -4,7 +4,10 @@
 
 <h2>Manage your Collab Request</h2>
 <h2>
-  You can view the requests you have received and Delete the ones you have sent
+  You can CONFIRM or REJECT the requests you have received and DELETE the ones you have sent.
+</h2>
+<h2>
+  Please check your email for more information.
 </h2>
 <button
   class="collab-button"
@@ -41,6 +44,11 @@
         <h5 class="card-title ">Sent at {{collab['postedat']}}</h5>
 
         <h5 class="card-title ">Message: {{collab['msg']}}</h5>
+         {% if collab['accepted'] %}
+        <h5 class="card-title ">Status: {{collab['accepted']}}</h5>
+         {% else %}
+        <h5 class="card-title ">Status: Awaiting Confirmation</h5>
+         {% endif %}
         <button class="a-button">
           <a href="{{url_for('dcollab', cid=collab['collabid'])}}"
             >Delete This Collab Request</a
@@ -67,17 +75,42 @@
     <h7>Collab Requests Received: ({{rnum}})</h7>
   </p>
   <div class="card-body">
-    {% if receives %}{% for collab in receives %}
-    <div id="form" style="width: 20rem;  border-style: solid;">
-      <div class="card-body">
-        <h5 class="card-title ">From {{collab['sName']}}</h5>
-        <h5 class="card-title ">Received at {{collab['postedat']}}</h5>
+    {% if receives %}
 
-        <h5 class="card-title ">Message: {{collab['msg']}}</h5>
-      </div>
-    </div>
+        {% for collab in receives %}
+            {% if collab['accepted'] %}
+                <div id="form" style="width: 20rem;  border-style: solid;">
+                  <div class="card-body">
+                    <h5 class="card-title ">From {{collab['sName']}}</h5>
+                    <h5 class="card-title ">Received at {{collab['postedat']}}</h5>
 
-    {% endfor %}{% else %}
+                    <h5 class="card-title ">Message: {{collab['msg']}}</h5>
+                    <h5 class="card-title ">Status: {{collab['accepted']}}</h5>
+                  </div>
+                </div>
+            {% else %}
+                <div id="form" style="width: 20rem;  border-style: solid;">
+                  <div class="card-body">
+                    <h5 class="card-title ">From {{collab['sName']}}</h5>
+                    <h5 class="card-title ">Received at {{collab['postedat']}}</h5>
+
+                    <h5 class="card-title ">Message: {{collab['msg']}}</h5>
+                    <button class="a-button">
+              <a href="{{url_for('confirm', cid=collab['collabid'])}}"
+                >Confirm Request</a
+              >
+            </button>
+            <button class="a-button">
+              <a href="{{url_for('reject', cid=collab['collabid'])}}"
+                >Reject Request</a
+              >
+            </button>
+                  </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+    {% else %}
     <p>
       <h7>You have not sent any collab requests.</h7>
     </p>
@@ -85,32 +118,6 @@
     {% endif %}
   </div>
 </div>
-<!-- <p>
-  ------------------------------------------------------------------------------------------------
-</p>
-<div class="card-body">
-  <p>
-    <h8 class="card-title">Collab requests sent:</h8>
-  </p>
 
-  {% if sends %}{% for collab in sends %}
-  <div id="form" style="width: 10rem;">
-    <div class="card-body">
-      <h5>receiver: {{collab['rName']}}</h5>
-      <h5>msg: {{collab['msg']}}</h5>
-      <button class="a-button">
-        <a href="{{url_for('dcollab', cid=collab['collabid'])}}"
-          >Delete This Collab Request</a
-        >
-      </button>
-    </div>
-  </div>
-  {% endfor %}{% else %}
-  <p>
-    <h7>You have not sent any collab requests.</h7>
-  </p>
-
-  {% endif %}
-</div> -->
 
 {% endblock %}

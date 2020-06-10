@@ -1,0 +1,70 @@
+{% extends "privateBase.html" %} {% block main_content %}
+
+
+<button type="submit" style="margin-bottom: 50px">
+  <a href="{{url_for('events', id=orgInfo['orgid'])}}">Back to Event List</a>
+</button>
+
+{% if edata['address2']%}
+<div id="form" class="gradient-border" style="width: 40rem; margin-bottom:50px">
+<div class="card-body" data-mid="{{edata['eid']}}">
+  <p><h7 class="card-title eName">Event Name : <p3>{{edata['eName']}} </p3></h7></p>
+  <p><h7 class="card-title ">Organized by : <a href={{url_for('singleP', id=orgInfo['orgid'], vid=edata['orgid'])}}>
+    <p3>{{edata['orgName']}}</p3>
+  </a></h7></p>
+
+  <p><h7 class="card-title eDate eTime">Time : <p3>{{edata['eDate']}} {{edata['eTime']}}</p3></h7></p>
+  <p><h7 class="card-title location">Location : <p3> {{edata['address1']}}, {{edata['address2']}}, {{edata['location']}}, {{edata['eState']}}, {{edata['eZip']}}</p3></h7></p>
+  <p><h7 class="card-title eBio">Event Description : <p3>{{edata['eBio']}} </p3></h7></p>
+  <p><h7 class="card-title" >RSVP'd : <p3 class="rsvpd">{{edata['rsvp']}}</p3></h7></p>
+  <button class="rsvp-button">RSVP to This Event</button>
+
+
+</div>
+</div>
+{% else %}
+<div id="form" class="gradient-border" style="width: 40rem; margin-bottom:50px">
+<div class="card-body" data-mid="{{edata['eid']}}">
+  <p><h7 class="card-title eName">Event Name : <p3>{{edata['eName']}} </p3></h7></p>
+  <p><h7 class="card-title ">Organized by : <a href={{url_for('singleP', id=orgInfo['orgid'], vid=edata['orgid'])}}>
+    <p3>{{edata['orgName']}}</p3>
+  </a></h7></p>
+
+  <p><h7 class="card-title eDate eTime">Time : <p3>{{edata['eDate']}} {{edata['eTime']}}</p3></h7></p>
+  <p><h7 class="card-title location">Location : <p3> {{edata['address1']}}, {{edata['location']}}, {{edata['eState']}}, {{edata['eZip']}}</p3></h7></p>
+  <p><h7 class="card-title eBio">Event Description : <p3>{{edata['eBio']}} </p3></h7></p>
+  <p><h7 class="card-title" >RSVP'd : <p3 class="rsvpd">{{edata['rsvp']}}</p3></h7></p>
+  <button class="rsvp-button">RSVP to This Event</button>
+
+
+</div>
+</div>
+{% endif %}
+<p></p>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+  $(".card-body").on("click", ".rsvp-button", function (event) {
+    var people = prompt('How many people from your organization would like to attend this event?');
+    var eid =  $(this).closest("div").attr('data-mid');
+    sendData(people, eid);
+  });
+
+
+  function sendData(people, eid) {
+      console.log("Sending people " + people + " and eid " + eid + " to the back end");
+     $.post("{{url_for('rsvp',id=orgInfo['orgid'])}}", { 'eid': eid, 'num': people }, update_page, 'json');
+    }
+
+  function update_page(obj) {
+        eid = obj.eid;
+        num = obj.num;
+        $("[data-mid=" + eid + "]").find(".rsvpd").text(num);
+    }
+</script>
+
+{% endblock %}
+
+</body>
+
+</html>

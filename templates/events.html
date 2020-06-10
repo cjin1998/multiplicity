@@ -5,7 +5,7 @@
     {% with messages = get_flashed_messages() %} {% if messages %}
     <div id="messages">
       {% for msg in messages %}
-    <p style="color:red; text-align: center">{{msg}}</p>
+    <p style="color:#0a2953; text-align: center">{{msg}}</p>
       {% endfor %}
     </div>
     {% endif %} {% endwith %}
@@ -14,19 +14,28 @@
 
 
 
-<h2 class="query">Search by Event Name or Location, or Select Date for Events</h2>
+<h2 class="query">Search by Event Name or City, or Select Date for Events</h2>
 
 
 <div id="form" >
   <form method="POST" action="{{url_for('events', id=orgInfo['orgid'])}}">
-    <label for="search-event">Event Name/Location </label>
+    <label for="search-event">Event Name/City </label>
     <input name="search-event" value="" />
     <p>
-      <label>Date
-        <input name="search-date" type="date" />
+      <label>Start Date
+        <input name="start-date" type="date" />
+      </label>
+    </p>
+    <p>
+      <label>End Date
+        <input name="end-date" type="date" />
       </label>
     </p>
     <input type="submit" name="submit-btn" value="Search" />
+    <button type="submit">
+  <a href="{{url_for('events', id=orgInfo['orgid'])}}">Clear Filter</a>
+</button>
+
   </form>
 </div>
 
@@ -39,16 +48,15 @@
   {% for data in events_data %}
 <div id="form" class="gradient-border" style="width: 40rem; margin-bottom:50px">
 <div class="card-body" data-mid="{{data['eid']}}">
-  <p><h7 class="card-title eName">Event Name : <p3>{{data['eName']}} </p3></h7></p>
+  <p><h7 class="card-title eName">Event Name : <a href={{url_for('singleEvent', id=orgInfo['orgid'], eid=data['eid'])}}><p3>{{data['eName']}} </p3></a></h7></p>
   <p><h7 class="card-title ">Organized by : <a href={{url_for('singleP', id=orgInfo['orgid'], vid=data['orgid'])}}>
     <p3>{{data['orgName']}}</p3>
   </a></h7></p>
 
   <p><h7 class="card-title eDate eTime">Time : <p3>{{data['eDate']}} {{data['eTime']}}</p3></h7></p>
-  <p><h7 class="card-title location">Location : <p3> {{data['location']}}</p3></h7></p>
-  <p><h7 class="card-title eBio">Event Description : <p3>{{data['eBio']}} </p3></h7></p>
+  <p><h7 class="card-title location">City : <p3> {{data['location']}}</p3></h7></p>
   <p><h7 class="card-title" >RSVP'd : <p3 class="rsvpd">{{data['rsvp']}}</p3></h7></p>
-  <button class="rsvp-button">RSVP to This Event</button>
+  <p><a href={{url_for('singleEvent', id=orgInfo['orgid'], eid=data['eid'])}}><p3>Learn More</p3></a></p>
 
 
 </div>
