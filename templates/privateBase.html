@@ -13,7 +13,7 @@
     {% block head_stuff %} {% endblock %}
   </head>
 
-  <body style="background-image: url({{ url_for('static', filename='background2.png') }})">
+  <body style="background-image: url({{ url_for('static', filename='background2.png') }}); background-attachment: fixed">
     <img
       class="upperleftgreen"
       src="{{url_for('static', filename='3.png')}}"
