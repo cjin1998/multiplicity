@@ -3,7 +3,7 @@ blinker==1.4
 cffi==1.14.0
 click==7.1.1
 colorama==0.4.1
-cryptography==2.9
+cryptography==3.2
 dbi==1.2.5
 Flask==1.1.2
 Flask-Mail==0.9.1
